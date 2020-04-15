@@ -134,8 +134,8 @@ def run():
     
     # Training Code Block
     print_training_info()
-    tf_config = tf.ConfigProto()  
-    tf_config.gpu_options.allow_growth = True
+    tf_config = tf.ConfigProto(device_count ={'GPU': 0})
+    #tf_config.gpu_options.allow_growth = True
     with tf.Session(config=tf_config) as sess:
         acc_cause_list, p_cause_list, r_cause_list, f1_cause_list = [], [], [], []
         acc_pos_list, p_pos_list, r_pos_list, f1_pos_list = [], [], [], []
