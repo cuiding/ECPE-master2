@@ -150,7 +150,7 @@ def run():
             te_doc_id, te_y_position, te_y_cause, te_y_pairs, te_x, te_sen_len, te_doc_len = load_data('data_combine/'+test_file_name, word_id_mapping, FLAGS.max_doc_len, FLAGS.max_sen_len)
             max_f1_cause, max_f1_pos, max_f1_avg = [-1.] * 3
             print('train docs: {}    test docs: {}'.format(len(tr_x), len(te_x)))
-            for i in range(0,FLAGS.training_iter):
+            for i in range(FLAGS.training_iter):
                 start_time, step = time.time(), 1
                 # train
                 for train, _ in get_batch_data(tr_x, tr_sen_len, tr_doc_len, FLAGS.keep_prob1, FLAGS.keep_prob2, tr_y_position, tr_y_cause, FLAGS.batch_size):
