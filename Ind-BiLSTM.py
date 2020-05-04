@@ -171,12 +171,12 @@ def run():
                     _, loss, pred_y_cause, true_y_cause, pred_y_pos, true_y_pos, doc_len_batch = sess.run(
                         [optimizer, loss_op, pred_y_cause_op, true_y_cause_op, pred_y_pos_op, true_y_pos_op, doc_len], feed_dict=dict(zip(placeholders, train)))
                     if step % 10 == 0:
-                        print('step {}: train loss {:.4f} '.format(step, loss))
+                        # print('step {}: train loss {:.4f} '.format(step, loss))
                         # print('pred_y_cause {} '.format(pred_y_cause))
                         acc, p, r, f1 = acc_prf(pred_y_cause, true_y_cause, doc_len_batch)
-                        print('cause_predict: train acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}'.format(acc, p, r, f1 ))
+                        # print('cause_predict: train acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}'.format(acc, p, r, f1 ))
                         acc, p, r, f1 = acc_prf(pred_y_pos, true_y_pos, doc_len_batch)
-                        print('position_predict: train acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}'.format(acc, p, r, f1 ))
+                        # print('position_predict: train acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}'.format(acc, p, r, f1 ))
                     step = step + 1
                 # test
                 test = [te_x, te_sen_len, te_doc_len, 1., 1., te_y_position, te_y_cause]
