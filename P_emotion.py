@@ -10,6 +10,7 @@ import sys, os, time, codecs, pdb
 
 from utils.tf_funcs import *
 from utils.prepare_data import *
+os.environ["CUDA_VISIBLE_DEVICES"] = '1,3'
 
 FLAGS = tf.app.flags.FLAGS
 # >>>>>>>>>>>>>>>>>>>> For Model <<<<<<<<<<<<<<<<<<<< #
@@ -137,7 +138,8 @@ def run():
     
     # Training Code Block
     print_training_info()
-    tf_config = tf.ConfigProto(device_count ={'GPU': 0})
+    tf_config = tf.ConfigProto()
+    tf_config.gpu_options.allow_growth = True
     #tf_config.gpu_options.allow_growth = True
     with tf.Session(config=tf_config) as sess:
         acc_cause_list, p_cause_list, r_cause_list, f1_cause_list = [], [], [], []
