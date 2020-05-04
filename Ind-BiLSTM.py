@@ -147,6 +147,11 @@ def run():
         acc_cause_list, p_cause_list, r_cause_list, f1_cause_list = [], [], [], []
         acc_pos_list, p_pos_list, r_pos_list, f1_pos_list = [], [], [], []
         p_pair_list, r_pair_list, f1_pair_list = [], [], []
+
+        tenboard_dir = './tensorboard/Ind-BiLSTM'
+        graph = tf.get_default_graph()
+        writer = tf.summary.FileWriter(tenboard_dir, graph)
+        writer.add_graph(sess.graph)
         
         for fold in range(1,11):
             sess.run(tf.global_variables_initializer())
@@ -243,10 +248,6 @@ def run():
         print('average : acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}\n'.format(acc_pos, p_pos, r_pos, f1_pos))
         print_time()
 
-        tenboard_dir = './tensorboard/Ind-BiLSTM'
-        graph = tf.get_default_graph()
-        writer = tf.summary.FileWriter(tenboard_dir, graph)
-        writer.add_graph(sess.graph)
         writer.close()
      
 def main(_):
