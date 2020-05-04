@@ -67,6 +67,8 @@ def build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_p
         pred_cause = tf.reshape(pred_cause, [-1, FLAGS.max_doc_len, FLAGS.n_class])
     
     s = get_s(inputs, name='pos_word_encode')
+    # print("s:{}".format(s))
+    # print("pred_cause:{}".format(pred_cause))
     s = tf.concat([s, pred_cause], 2)
     s = RNN(s, doc_len, n_hidden=FLAGS.n_hidden, scope=FLAGS.scope + 'pos_sentence_layer')
     with tf.name_scope('sequence_prediction'):

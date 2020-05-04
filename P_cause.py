@@ -78,6 +78,7 @@ def build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_p
         pred_pos = tf.nn.softmax(tf.matmul(s1, w_pos) + b_pos)
         pred_pos = tf.reshape(pred_pos, [-1, FLAGS.max_doc_len, FLAGS.n_class])
 
+    # print(" pred_pos:{}".format(pred_pos))
     reg = tf.nn.l2_loss(w_cause) + tf.nn.l2_loss(b_cause)
     reg += tf.nn.l2_loss(w_pos) + tf.nn.l2_loss(b_pos)
     return pred_pos, pred_cause, reg

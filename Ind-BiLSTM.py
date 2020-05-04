@@ -38,12 +38,13 @@ tf.app.flags.DEFINE_float('l2_reg', 0.00001, 'l2 regularization')
 tf.app.flags.DEFINE_float('cause', 1.000, 'lambda1')
 tf.app.flags.DEFINE_float('pos', 1.00, 'lambda2')
 
-
+#build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_position, y_cause)
 def build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_position, y_cause, RNN = biLSTM):
     x = tf.nn.embedding_lookup(word_embedding, x)
     inputs = tf.reshape(x, [-1, FLAGS.max_sen_len, FLAGS.embedding_dim])
     inputs = tf.nn.dropout(inputs, keep_prob=keep_prob1)
     sen_len = tf.reshape(sen_len, [-1])
+
     def get_s(inputs, name):
         with tf.name_scope('word_encode'):  
             inputs = RNN(inputs, sen_len, n_hidden=FLAGS.n_hidden, scope=FLAGS.scope+'word_layer' + name)
@@ -55,6 +56,7 @@ def build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_p
             s = att_var(inputs,sen_len,w1,b1,w2)
         s = tf.reshape(s, [-1, FLAGS.max_doc_len, 2 * FLAGS.n_hidden])
         return s
+
     s = get_s(inputs, name='cause_word_encode')
     s = RNN(s, doc_len, n_hidden=FLAGS.n_hidden, scope=FLAGS.scope + 'cause_sentence_layer')
     with tf.name_scope('sequence_prediction'):
@@ -119,16 +121,21 @@ def run():
     
     
     pred_pos, pred_cause, reg = build_model(word_embedding, x, sen_len, doc_len, keep_prob1, keep_prob2, y_position, y_cause)
+    # print("pred_pos.shape():{}".format(pred_pos))
+    # print("pred_cause.shape():{}".format(pred_cause))
+    # print("reg.shape():{}".format(reg))
     valid_num = tf.cast(tf.reduce_sum(doc_len), dtype=tf.float32)
     loss_pos = - tf.reduce_sum(y_position * tf.log(pred_pos)) / valid_num
     loss_cause = - tf.reduce_sum(y_cause * tf.log(pred_cause)) / valid_num
     loss_op = loss_cause * FLAGS.cause + loss_pos * FLAGS.pos + reg * FLAGS.l2_reg
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(loss_op)
+
     
     true_y_cause_op = tf.argmax(y_cause, 2)
     pred_y_cause_op = tf.argmax(pred_cause, 2)
     true_y_pos_op = tf.argmax(y_position, 2)
     pred_y_pos_op = tf.argmax(pred_pos, 2)
+    # print("pred_y_pos_op:{}".format(pred_y_pos_op))
     print('build model done!\n')
     
     # Training Code Block
@@ -159,6 +166,7 @@ def run():
                         [optimizer, loss_op, pred_y_cause_op, true_y_cause_op, pred_y_pos_op, true_y_pos_op, doc_len], feed_dict=dict(zip(placeholders, train)))
                     if step % 10 == 0:
                         print('step {}: train loss {:.4f} '.format(step, loss))
+                        # print('pred_y_cause {} '.format(pred_y_cause))
                         acc, p, r, f1 = acc_prf(pred_y_cause, true_y_cause, doc_len_batch)
                         print('cause_predict: train acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}'.format(acc, p, r, f1 ))
                         acc, p, r, f1 = acc_prf(pred_y_pos, true_y_pos, doc_len_batch)

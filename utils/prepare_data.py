@@ -24,8 +24,9 @@ def load_w2v(embedding_dim, embedding_dim_pos, train_file_path, embedding_path):
         emotion, clause = line[2], line[-1]
         words.extend( [emotion] + clause.split())
     words = set(words)  # 所有不重复词的集合
-    word_idx = dict((c, k + 1) for k, c in enumerate(words)) # 每个词及词的位置
-    word_idx_rev = dict((k + 1, c) for k, c in enumerate(words)) # 每个词及词的位置
+    word_idx = dict((c, k + 1) for k, c in enumerate(words)) # 字典（词，编号）
+    # print(word_idx)
+    word_idx_rev = dict((k + 1, c) for k, c in enumerate(words)) # 字典（编号，词）
     
     w2v = {}
     inputFile2 = open(embedding_path,encoding='utf-8')
@@ -44,6 +45,7 @@ def load_w2v(embedding_dim, embedding_dim_pos, train_file_path, embedding_path):
         else:
             vec = list(np.random.rand(embedding_dim) / 5. - 0.1) # 从均匀分布[-0.1,0.1]中随机取
         embedding.append(vec)
+    # print(embedding)
     print('w2v_file: {}\nall_words: {} hit_words: {}'.format(embedding_path, len(words), hit))
 
     embedding_pos = [list(np.zeros(embedding_dim_pos))]
@@ -55,7 +57,7 @@ def load_w2v(embedding_dim, embedding_dim_pos, train_file_path, embedding_path):
     print("load embedding done!\n")
     return word_idx_rev, word_idx, embedding, embedding_pos
 
-
+#load_data('data_combine/'+train_file_name, word_id_mapping: 字典（词，编号）, FLAGS.max_doc_len, FLAGS.max_sen_len)
 def load_data(input_file, word_idx, max_doc_len = 75, max_sen_len = 45):
     print('load data_file: {}'.format(input_file))
     y_position, y_cause, y_pairs, x, sen_len, doc_len = [], [], [], [], [], []
@@ -70,10 +72,12 @@ def load_data(input_file, word_idx, max_doc_len = 75, max_sen_len = 45):
         doc_id.append(line[0])
         d_len = int(line[1])
         pairs = eval('[' + inputFile.readline().strip() + ']')
+        # print("pairs:{}".format(pairs))
         doc_len.append(d_len)
         y_pairs.append(pairs)
         pos, cause = zip(*pairs)
         y_po, y_ca, sen_len_tmp, x_tmp = np.zeros((max_doc_len, 2)), np.zeros((max_doc_len, 2)), np.zeros(max_doc_len,dtype=np.int32), np.zeros((max_doc_len, max_sen_len),dtype=np.int32)
+        # print("max_sen_len2: {}", format(max_sen_len))
         for i in range(d_len):
             y_po[i][int(i+1 in pos)]=1
             y_ca[i][int(i+1 in cause)]=1
@@ -81,20 +85,26 @@ def load_data(input_file, word_idx, max_doc_len = 75, max_sen_len = 45):
             sen_len_tmp[i] = min(len(words.split()), max_sen_len)
             for j, word in enumerate(words.split()):
                 if j >= max_sen_len:
+                    # print("max_sen_len:{}", format(max_sen_len))
+                    # print("i:{}",format(i))
+                    # print("j:{}", format(j))
+                    # print("word:{}", format(word))
+                    # print("n_cut:{}", format(n_cut))
                     n_cut += 1
                     break
                 x_tmp[i][j] = int(word_idx[word])
         
-        y_position.append(y_po)
-        y_cause.append(y_ca)
+        y_position.append(y_po)#不是：1,0 是：0,1
+        y_cause.append(y_ca)#不是：1,0 是：0,1
         x.append(x_tmp)
         sen_len.append(sen_len_tmp)
     
     y_position, y_cause, x, sen_len, doc_len = map(np.array, [y_position, y_cause, x, sen_len, doc_len])
     for var in ['y_position', 'y_cause', 'x', 'sen_len', 'doc_len']:
         print('{}.shape {}'.format( var, eval(var).shape ))
-    print('n_cut {}'.format(n_cut))
+    # print('n_cut {}'.format(n_cut))
     print('load data done!\n')
+
     return doc_id, y_position, y_cause, y_pairs, x, sen_len, doc_len
 
 def load_data_2nd_step(input_file, word_idx, max_doc_len = 75, max_sen_len = 45):
