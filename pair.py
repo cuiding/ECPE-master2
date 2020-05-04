@@ -10,7 +10,7 @@ import sys, os, time, codecs, pdb
 
 from utils.tf_funcs import *
 from utils.prepare_data import *
-os.environ["CUDA_VISIBLE_DEVICES"] = '1,3'
+os.environ["CUDA_VISIBLE_DEVICES"] = '5, 4'
 
 FLAGS = tf.app.flags.FLAGS
 # >>>>>>>>>>>>>>>>>>>> For Model <<<<<<<<<<<<<<<<<<<< #

@@ -243,6 +243,12 @@ def run():
         print('position_predict: test f1 in 10 fold: {}'.format(np.array(f1_pos_list).reshape(-1,1)))
         print('average : acc {:.4f} p {:.4f} r {:.4f} f1 {:.4f}\n'.format(acc_pos, p_pos, r_pos, f1_pos))
         print_time()
+
+        tenboard_dir = './tensorboard/Ind-BiLSTM'
+        graph = tf.get_default_graph()
+        writer = tf.summary.FileWriter(tenboard_dir, graph)
+        writer.add_graph(sess.graph)
+        writer.close()
      
 def main(_):
     # FLAGS.log_file_name = 'step1.log'
