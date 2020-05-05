@@ -135,7 +135,8 @@ def run():
                 for train, _ in get_batch_data(tr_x, tr_sen_len, FLAGS.keep_prob1, FLAGS.keep_prob2, tr_distance, tr_y, FLAGS.batch_size):
                     _, loss, pred_y, true_y, acc = sess.run(
                         [optimizer, loss_op, pred_y_op, true_y_op, acc_op], feed_dict=dict(zip(placeholders, train)))
-                    print('step {}: train loss {:.4f} acc {:.4f}'.format(step, loss, acc))
+                    if step % 20 == 0:
+                        print('step {}: train loss {:.4f} acc {:.4f}'.format(step, loss, acc))
                     step = step + 1
                 # test
                 test = [te_x, te_sen_len, 1., 1., te_distance, te_y]
