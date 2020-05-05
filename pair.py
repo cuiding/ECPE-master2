@@ -128,36 +128,36 @@ def run():
             te_pair_id_all, te_pair_id, te_y, te_x, te_sen_len, te_distance = load_data_2nd_step(save_dir + test_file_name, word_id_mapping, max_sen_len = FLAGS.max_sen_len)
             
             max_acc_subtask, max_f1 = [-1.]*2
-            print('train docs: {}    test docs: {}'.format(len(tr_x), len(te_x)))
+            # print('train docs: {}    test docs: {}'.format(len(tr_x), len(te_x)))
             for i in range(FLAGS.training_iter):
                 start_time, step = time.time(), 1
                 # train
                 for train, _ in get_batch_data(tr_x, tr_sen_len, FLAGS.keep_prob1, FLAGS.keep_prob2, tr_distance, tr_y, FLAGS.batch_size):
                     _, loss, pred_y, true_y, acc = sess.run(
                         [optimizer, loss_op, pred_y_op, true_y_op, acc_op], feed_dict=dict(zip(placeholders, train)))
-                    if step % 20 == 0:
-                        print('step {}: train loss {:.4f} acc {:.4f}'.format(step, loss, acc))
+                    # if step % 20 == 0:
+                    #     print('step {}: train loss {:.4f} acc {:.4f}'.format(step, loss, acc))
                     step = step + 1
                 # test
                 test = [te_x, te_sen_len, 1., 1., te_distance, te_y]
                 loss, pred_y, true_y, acc = sess.run([loss_op, pred_y_op, true_y_op, acc_op], feed_dict=dict(zip(placeholders, test)))
-                print('\nepoch {}: test loss {:.4f}, acc {:.4f}, cost time: {:.1f}s\n'.format(i, loss, acc, time.time()-start_time))
+                # print('\nepoch {}: test loss {:.4f}, acc {:.4f}, cost time: {:.1f}s\n'.format(i, loss, acc, time.time()-start_time))
                 if acc > max_acc_subtask:
                     max_acc_subtask = acc
-                print('max_acc_subtask: {:.4f} \n'.format(max_acc_subtask))
+                # print('max_acc_subtask: {:.4f} \n'.format(max_acc_subtask))
                 
                 # p, r, f1, o_p, o_r, o_f1, keep_rate = prf_2nd_step(te_pair_id_all, te_pair_id, pred_y, fold, save_dir)
                 p, r, f1, o_p, o_r, o_f1, keep_rate = prf_2nd_step(te_pair_id_all, te_pair_id, pred_y)
                 if f1 > max_f1:
                     max_keep_rate, max_p, max_r, max_f1 = keep_rate, p, r, f1
-                print('original o_p {:.4f} o_r {:.4f} o_f1 {:.4f}'.format(o_p, o_r, o_f1))
-                print('pair filter keep rate: {}'.format(keep_rate))
-                print('test p {:.4f} r {:.4f} f1 {:.4f}'.format(p, r, f1))
-
-                print('max_p {:.4f} max_r {:.4f} max_f1 {:.4f}\n'.format(max_p, max_r, max_f1))
+                # print('original o_p {:.4f} o_r {:.4f} o_f1 {:.4f}'.format(o_p, o_r, o_f1))
+                # print('pair filter keep rate: {}'.format(keep_rate))
+                # print('test p {:.4f} r {:.4f} f1 {:.4f}'.format(p, r, f1))
+                #
+                # print('max_p {:.4f} max_r {:.4f} max_f1 {:.4f}\n'.format(max_p, max_r, max_f1))
                 
 
-            print('Optimization Finished!\n')
+            # print('Optimization Finished!\n')
             print('############# fold {} end ###############'.format(fold))
             # fold += 1
             acc_subtask_list.append(max_acc_subtask)
